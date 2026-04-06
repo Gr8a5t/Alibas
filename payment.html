@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment - Aziba's London Lounge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <section class="head">
+        <div class="header-content">
+            <b>Aziba's London Lounge</b>
+            <div class="aom">
+                <div class="disk">
+                    <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                    <a href="index.html#menu" class="nav-link"><i class="fas fa-utensils"></i> Menu</a>
+                    <a href="index.html#order" class="nav-link"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="payment-section">
+            <h1 class="menu-title"><i class="fas fa-credit-card"></i> Complete Your Payment</h1>
+            
+            <div class="payment-container">
+                <div class="order-summary">
+                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                    <div id="payment-summary" class="payment-summary">
+                        <!-- Order items will be loaded here -->
+                    </div>
+                    <div class="total-summary">
+                        <h4>Total Amount: <span id="payment-total">₦0</span></h4>
+                    </div>
+                </div>
+
+                <div class="payment-methods">
+                    <h3><i class="fas fa-wallet"></i> Select Payment Method</h3>
+                    
+                    <div class="payment-option">
+                        <input type="radio" id="debit-card" name="payment-method" value="debit-card" checked>
+                        <label for="debit-card">
+                            <i class="fas fa-credit-card fa-2x"></i>
+                            <div>
+                                <strong>Debit/Credit Card</strong>
+                                <p class="payment-desc">Pay with your Visa, Mastercard or Verve card</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="payment-option">
+                        <input type="radio" id="bank-transfer" name="payment-method" value="bank-transfer">
+                        <label for="bank-transfer">
+                            <i class="fas fa-university fa-2x"></i>
+                            <div>
+                                <strong>Bank Transfer</strong>
+                                <p class="payment-desc">Transfer directly to our bank account</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="payment-option">
+                        <input type="radio" id="ussd" name="payment-method" value="ussd">
+                        <label for="ussd">
+                            <i class="fas fa-mobile-alt fa-2x"></i>
+                            <div>
+                                <strong>USSD</strong>
+                                <p class="payment-desc">Pay using USSD code from your mobile</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Payment Details Sections -->
+                    <div class="payment-details active" id="debit-card-details">
+                        <h4><i class="fas fa-credit-card"></i> Card Details</h4>
+                        <div class="form-group">
+                            <label for="card-number">Card Number</label>
+                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" class="payment-input" maxlength="19">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiry-date">Expiry Date</label>
+                                <input type="text" id="expiry-date" placeholder="MM/YY" class="payment-input" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="password" id="cvv" placeholder="123" class="payment-input" maxlength="3">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="card-name">Cardholder Name</label>
+                            <input type="text" id="card-name" placeholder="John Doe" class="payment-input">
+                        </div>
+                    </div>
+
+                    <div class="payment-details" id="bank-transfer-details">
+                        <h4><i class="fas fa-university"></i> Bank Transfer Details</h4>
+                        <div class="bank-details">
+                            <div class="bank-info">
+                                <span class="bank-label">Bank Name:</span>
+                                <span class="bank-value">Example Bank Plc</span>
+                            </div>
+                            <div class="bank-info">
+                                <span class="bank-label">Account Number:</span>
+                                <span class="bank-value">0123456789</span>
+                            </div>
+                            <div class="bank-info">
+                                <span class="bank-label">Account Name:</span>
+                                <span class="bank-value">Aziba's London Lounge</span>
+                            </div>
+                            <div class="bank-info">
+                                <span class="bank-label">Reference:</span>
+                                <span class="bank-value" id="order-reference">ORDER-${generateOrderId()}</span>
+                            </div>
+                        </div>
+                        <p class="note">Please use the reference code above when making the transfer</p>
+                    </div>
+
+                    <div class="payment-details" id="ussd-details">
+                        <h4><i class="fas fa-mobile-alt"></i> USSD Payment</h4>
+                        <div class="ussd-instructions">
+                            <p>Dial the following code on your mobile phone:</p>
+                            <div class="ussd-code">*123*Amount*Account#</div>
+                            <p>Example for ₦5,000 payment:</p>
+                            <div class="ussd-code">*123*5000*0123456789#</div>
+                            <p class="note">You will receive a confirmation SMS after successful payment</p>
+                        </div>
+                    </div>
+
+                    <div class="payment-actions">
+                        <button id="process-payment" class="pay-now-btn">
+                            <i class="fas fa-lock"></i> Complete Payment
+                        </button>
+                        <a href="index.html#order" class="back-to-cart">
+                            <i class="fas fa-arrow-left"></i> Back to Cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="payment.js"></script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Aziba's London Lounge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #f5f7fa;
+        }
+
+        .admin-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .admin-header h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-header h1 i {
+            color: #3498db;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu li:hover {
+            background: #f8f9fa;
+        }
+
+        .sidebar-menu li.active {
+            background: #e8f4fc;
+            border-left: 4px solid #3498db;
+            color: #3498db;
+        }
+
+        .sidebar-menu li i {
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .card .trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .card .trend.up {
+            color: #27ae60;
+        }
+
+        .card .trend.down {
+            color: #e74c3c;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            color: #2c3e50;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .action-btn.view {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn.update {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 10px 0;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .sidebar-menu li {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1><i class="fas fa-user-shield"></i> Admin Dashboard</h1>
+        <div>
+            <span id="adminName">Welcome, Admin</span> <br><br><br>
+            <a href="login in.html" class="login-btn">Log out  <i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="active" data-tab="overview">
+                    <i class="fas fa-chart-line"></i> Overview
+                </li>
+                <li data-tab="orders">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </li>
+                <li data-tab="menu">
+                    <i class="fas fa-utensils"></i> Menu Management
+                </li>
+                <li data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </li>
+                <li data-tab="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Today's Orders</h3>
+                        <div class="value">24</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> 12% from yesterday
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Revenue Today</h3>
+                        <div class="value">₦152,000</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> 8% from yesterday
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Pending Orders</h3>
+                        <div class="value">7</div>
+                        <div class="trend down">
+                            <i class="fas fa-arrow-down"></i> 2 from last hour
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Total Customers</h3>
+                        <div class="value">1,248</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> 45 this week
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="fas fa-clock"></i> Recent Orders</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrders">
+                            <!-- Orders will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="orders" class="tab-content" style="display: none;">
+                <div class="section">
+                    <h2><i class="fas fa-shopping-cart"></i> All Orders</h2>
+                    <div class="filter-controls">
+                        <select id="statusFilter" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <table style="margin-top: 20px;">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allOrders">
+                            <!-- All orders will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Menu Management Tab -->
+            <div id="menu" class="tab-content" style="display: none;">
+                <div class="section">
+                    <h2><i class="fas fa-utensils"></i> Menu Items</h2>
+                    <button id="addMenuItem" class="action-btn update" style="margin-bottom: 20px;">
+                        <i class="fas fa-plus"></i> Add New Item
+                    </button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuItems">
+                            <!-- Menu items will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content" style="display: none;">
+                <div class="section">
+                    <h2><i class="fas fa-chart-bar"></i> Sales Analytics</h2>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2><i class="fas fa-star"></i> Popular Items</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Orders</th>
+                                <th>Revenue</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="popularItems">
+                            <!-- Popular items will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content" style="display: none;">
+                <div class="section">
+                    <h2><i class="fas fa-cog"></i> Restaurant Settings</h2>
+                    <form id="settingsForm">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Restaurant Name</label>
+                            <input type="text" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" 
+                                   value="Aziba's London Lounge">
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Opening Hours</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="text" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;" 
+                                       value="8:00 AM" placeholder="Opening Time">
+                                <input type="text" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;" 
+                                       value="10:00 PM" placeholder="Closing Time">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Delivery Radius (km)</label>
+                            <input type="number" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" 
+                                   value="5" min="1" max="20">
+                        </div>
+                        
+                        <button type="submit" class="action-btn update" style="padding: 10px 20px;">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Check if admin is logged in
+        if (!localStorage.getItem('loggedIn') || localStorage.getItem('userType') !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        // Update admin name
+        document.getElementById('adminName').textContent = `Welcome, ${localStorage.getItem('userEmail')}`;
+
+        // Tab navigation
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all items
+                menuItems.forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                item.classList.add('active');
+                
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // Show selected tab content
+                const tabId = item.getAttribute('data-tab');
+                document.getElementById(tabId).style.display = 'block';
+            });
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('userType');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        });
+
+        // Sample order data
+        const orders = [
+            {
+                id: 'ORD-001',
+                customer: 'John Doe',
+                items: 'Chips, Shawarma',
+                amount: '₦7,000',
+                status: 'pending',
+                time: '10:30 AM',
+                date: '2024-01-15'
+            },
+            {
+                id: 'ORD-002',
+                customer: 'Jane Smith',
+                items: 'Full Chicken, Catfish',
+                amount: '₦13,000',
+                status: 'processing',
+                time: '11:15 AM',
+                date: '2024-01-15'
+            },
+            {
+                id: 'ORD-003',
+                customer: 'Mike Johnson',
+                items: 'Half Chicken, Laps',
+                amount: '₦6,000',
+                status: 'completed',
+                time: '9:45 AM',
+                date: '2024-01-15'
+            },
+            {
+                id: 'ORD-004',
+                customer: 'Sarah Williams',
+                items: 'Stick Chicken x3, Gizzards',
+                amount: '₦4,000',
+                status: 'pending',
+                time: '12:00 PM',
+                date: '2024-01-15'
+            },
+            {
+                id: 'ORD-005',
+                customer: 'David Brown',
+                items: 'Full Chicken',
+                amount: '₦8,000',
+                status: 'cancelled',
+                time: '8:30 AM',
+                date: '2024-01-14'
+            }
+        ];
+
+        // Sample menu items
+        const menuItemsData = [
+            {
+                name: 'Chips',
+                description: 'Crispy golden fries',
+                price: '₦3,000',
+                category: 'Fast Food'
+            },
+            {
+                name: 'Full Chicken',
+                description: 'Whole grilled chicken',
+                price: '₦8,000',
+                category: 'Barbecue'
+            },
+            {
+                name: 'Shawarma',
+                description: 'Chicken shawarma wrap',
+                price: '₦4,000',
+                category: 'Fast Food'
+            },
+            {
+                name: 'Catfish',
+                description: 'Grilled catfish',
+                price: '₦5,000',
+                category: 'Seafood'
+            }
+        ];
+
+        // Popular items data
+        const popularItems = [
+            { item: 'Chips', orders: 156, revenue: '₦468,000', rating: '4.8' },
+            { item: 'Full Chicken', orders: 89, revenue: '₦712,000', rating: '4.9' },
+            { item: 'Shawarma', orders: 142, revenue: '₦568,000', rating: '4.7' },
+            { item: 'Half Chicken', orders: 76, revenue: '₦304,000', rating: '4.6' },
+            { item: 'Catfish', orders: 63, revenue: '₦315,000', rating: '4.8' }
+        ];
+
+        // Populate recent orders
+        function populateRecentOrders() {
+            const recentOrdersContainer = document.getElementById('recentOrders');
+            recentOrdersContainer.innerHTML = '';
+            
+            orders.slice(0, 5).forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.customer}</td>
+                    <td>${order.items}</td>
+                    <td>${order.amount}</td>
+                    <td><span class="status ${order.status}">${order.status.toUpperCase()}</span></td>
+                    <td>${order.time}</td>
+                `;
+                recentOrdersContainer.appendChild(row);
+            });
+        }
+
+        // Populate all orders
+        function populateAllOrders() {
+            const allOrdersContainer = document.getElementById('allOrders');
+            allOrdersContainer.innerHTML = '';
+            
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.customer}</td>
+                    <td>${order.items}</td>
+                    <td>${order.amount}</td>
+                    <td><span class="status ${order.status}">${order.status.toUpperCase()}</span></td>
+                    <td>${order.date}</td>
+                    <td>
+                        <button class="action-btn view" onclick="viewOrder('${order.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn update" onclick="updateOrder('${order.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                allOrdersContainer.appendChild(row);
+            });
+        }
+
+        // Populate menu items
+        function populateMenuItems() {
+            const menuItemsContainer = document.getElementById('menuItems');
+            menuItemsContainer.innerHTML = '';
+            
+            menuItemsData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><i class="fas fa-image fa-2x" style="color: #ddd;"></i></td>
+                    <td>${item.name}</td>
+                    <td>${item.description}</td>
+                    <td>${item.price}</td>
+                    <td>${item.category}</td>
+                    <td>
+                        <button class="action-btn update" onclick="editMenuItem(${index})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn delete" onclick="deleteMenuItem(${index})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                menuItemsContainer.appendChild(row);
+            });
+        }
+
+        // Populate popular items
+        function populatePopularItems() {
+            const popularItemsContainer = document.getElementById('popularItems');
+            popularItemsContainer.innerHTML = '';
+            
+            popularItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.item}</td>
+                    <td>${item.orders}</td>
+                    <td>${item.revenue}</td>
+                    <td>${item.rating} <i class="fas fa-star" style="color: gold;"></i></td>
+                `;
+                popularItemsContainer.appendChild(row);
+            });
+        }
+
+        // Initialize sales chart
+        function initializeSalesChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Daily Revenue',
+                        data: [120000, 98000, 152000, 134000, 168000, 198000, 156000],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₦' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter orders by status
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            const status = this.value;
+            const rows = document.querySelectorAll('#allOrders tr');
+            
+            rows.forEach(row => {
+                if (status === 'all' || row.querySelector('.status').classList.contains(status)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Add new menu item
+        document.getElementById('addMenuItem').addEventListener('click', function() {
+            alert('Add new menu item feature would open a form in a real application.');
+        });
+
+        // Settings form submission
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Settings saved successfully!');
+        });
+
+        // Demo functions
+        function viewOrder(orderId) {
+            alert(`Viewing order: ${orderId}\n\nIn a real application, this would show detailed order information.`);
+        }
+
+        function updateOrder(orderId) {
+            alert(`Updating order: ${orderId}\n\nIn a real application, this would open an order update form.`);
+        }
+
+        function editMenuItem(index) {
+            const item = menuItemsData[index];
+            alert(`Editing: ${item.name}\nPrice: ${item.price}\n\nIn a real application, this would open an edit form.`);
+        }
+
+        function deleteMenuItem(index) {
+            if (confirm('Are you sure you want to delete this menu item?')) {
+                alert('Menu item deleted successfully!');
+                // In a real application, you would remove the item from the database
+            }
+        }
+
+        // Initialize everything
+        populateRecentOrders();
+        populateAllOrders();
+        populateMenuItems();
+        populatePopularItems();
+        initializeSalesChart();
+    </script>
+</body>
+</html>
